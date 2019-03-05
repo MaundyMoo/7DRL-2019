@@ -1,4 +1,4 @@
-import Constants, pygame, Image
+import Constants, pygame, Image, Logger
 class Entity:
     def __init__(self, x: int, y: int, spriteSheet: str, spriteSize: int, interval: int):
         self.x, self.y = x, y
@@ -52,6 +52,12 @@ class Player(Entity):
 
         super().__init__(x, y, spritesheetPath, size, interval)
         self.map = map
+
+        self.logger = Logger.Logger(Constants.GAME_WIDTH, Constants.LOGGER_WIDTH, Constants.SCREEN_HEIGHT)
+
+    def Render(self, screen, OffsetX: int, OffsetY: int):
+        super().Render(screen, OffsetX, OffsetY)
+        self.logger.Render(screen)
 
     def move(self, dX: int, dY: int):
         #Checks for collions at the boundaries of the screen/map
