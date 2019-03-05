@@ -44,6 +44,7 @@ class Logger:
         Need to update the current values of playerHealth etc.
         '''
         self.playerHealth = playerHealth
+        #max health may change?
         self.playerMaxHealth = playerMaxHealth
         while len(self.log) > self.logAmount:
             self.log.pop(0)

@@ -49,11 +49,13 @@ class Player(Entity):
         spritesheetPath = 'res/playerSheet.png'
         size = 32
         interval = 10
-
         super().__init__(x, y, spritesheetPath, size, interval)
+
         self.map = map
 
         self.logger = Logger.Logger(Constants.GAME_WIDTH, Constants.LOGGER_WIDTH, Constants.SCREEN_HEIGHT)
+        self.maxHealth = 10
+        self.curHealth = 10
 
     def Render(self, screen, OffsetX: int, OffsetY: int):
         super().Render(screen, OffsetX, OffsetY)
