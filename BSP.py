@@ -24,13 +24,12 @@ class BinaryTree:
         return nodes
 
     def getLeafNodes(self, node = 'root', returnList = []):
-        if node is 'root': node = self.root
-        if node:
-            self.postOrderTraversal(node.getleftChild(), returnList)
-            self.postOrderTraversal(node.getrightChild(),returnList)
+        nodes = self.Traversal()
+        leafNodes = []
+        for node in nodes:
             if node.getleftChild() is None and node.getrightChild() is None:
-                returnList.append(node)
-        return returnList
+                leafNodes.append(node)
+        return leafNodes
 
 # Need to decide what attributes the node object should have
 class Node:
@@ -48,6 +47,10 @@ class Node:
             _str += (str(each) + '\n').rstrip(' ')
         return _str
     '''
+    @property
+    def values(self):
+        return (self.x, self.y, self.height, self.width)
+
     def setleftChild(self, node):
         self.leftChild = node
 
@@ -106,30 +109,6 @@ class Node:
             right = Node(self.x + split, self.y, self.width - split, self.height)
         self.setleftChild(left)
         self.setrightChild(right)
-        '''
-        h, w = len(self.array)-1, len(self.array[0])-1
-        r = random.randint(0, 1)
-        #Split vertically
-        if r == 0 and h > 2*boundary_size:
-            print('vertical')
-            splitindex = random.randint(boundary_size, h - boundary_size)
-            left, right = [], []
-            if len(self.array[0]) > boundary_size:
-                for y in range(len(self.array)):
-                    left.append(self.array[y][:splitindex])
-                    right.append(self.array[y][splitindex:])
-                self.setleftChild(Node(left))
-                self.setrightChild(Node(right))
-        elif w > 2*boundary_size:
-            print('horizontal')
-            splitindex = random.randint(boundary_size, w - boundary_size)
-            if len(self.array) > boundary_size:
-                v = random.randint(0, w)
-                top = self.array[:splitindex]
-                bottom = self.array[splitindex:]
-                self.setleftChild(Node(top))
-                self.setrightChild(Node(bottom))
-        '''
 
 def generate(w: int, h: int, min_size: int = 5, iterations: int = 2) -> list:
     global boundary_size
@@ -142,12 +121,18 @@ def generate(w: int, h: int, min_size: int = 5, iterations: int = 2) -> list:
     print(Tree.getRootNode())
     nodes = Tree.Traversal()
     print(nodes, '\n', len(nodes))
-    '''
-    Tree.getRootNode().split()
-    print(Tree.getRootNode(), '-' * 20 + '\n', Tree.getRootNode().getleftChild()\
-    , '-' * 20 + '\n', Tree.getRootNode().getrightChild(), end='', sep='')
-    print(Tree.postOrderTraversal(Tree.getRootNode()))
-    '''
+    leaves = Tree.getLeafNodes()
+    print(leaves, '\n', len(leaves))
+    checkLeaves(arr, leaves)
+
+def checkLeaves(arr, nodes):
+    for each in arr:
+        print(each)
+    for i in range(len(arr[0])):
+        arr[0][i] = '0'
+    print('-_'*50)
+    for each in arr:
+        print(each)
 
 def iterate(node, maxiters: int, iter: int = 0):
     if not iter == maxiters and not node is None:
@@ -156,4 +141,4 @@ def iterate(node, maxiters: int, iter: int = 0):
         iterate(node.getleftChild(), maxiters, iter)
         iterate(node.getrightChild(), maxiters, iter)
 
-generate(50, 50)
+generate(20, 20)
