@@ -34,7 +34,7 @@ class BinaryTree:
 # Need to decide what attributes the node object should have
 class Node:
     # Idk if parsing in the parent node is necessary
-    def __init__(self, x: int, y: int, height: int, width: int, leftChild=None, rightChild=None, parent=None):
+    def __init__(self, x: int, y: int, width: int, height: int, leftChild=None, rightChild=None, parent=None):
         self.x, self.y = x, y
         self.width, self.height = width, height
         self.leftChild = leftChild
@@ -115,6 +115,7 @@ def generate(w: int, h: int, min_size: int = 5, iterations: int = 2) -> list:
     boundary_size = min_size
     arr = [[None for i in range(w)] for j in range(h)]
     Root = Node(x = 0, y = 0, width = len(arr[0]), height = len(arr))
+    print(Root.values)
     Root.split()
     Tree = BinaryTree(Root)
     iterate(Tree.getRootNode(), iterations)
@@ -125,14 +126,23 @@ def generate(w: int, h: int, min_size: int = 5, iterations: int = 2) -> list:
     print(leaves, '\n', len(leaves))
     checkLeaves(arr, leaves)
 
-def checkLeaves(arr, nodes):
+def checkLeaves(arr, leaves):
     for each in arr:
         print(each)
-    for i in range(len(arr[0])):
-        arr[0][i] = '0'
-    print('-_'*50)
+    counter = 0
+    for leaf in leaves:
+        counter += 1
+        print(counter)
+        #vals(x, y, width, height)
+        print(leaf.values)
+        (x, y, width, height) = leaf.values
+        for i in range(y, height):
+            for j in range(x, width):
+                arr[i][j] = counter
     for each in arr:
         print(each)
+
+
 
 def iterate(node, maxiters: int, iter: int = 0):
     if not iter == maxiters and not node is None:
