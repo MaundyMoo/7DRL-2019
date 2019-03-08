@@ -2,7 +2,6 @@ import Constants, pygame, Image, Logger
 class Entity:
     def __init__(self, x: int, y: int, spriteSheet: str, spriteSize: int, interval: int):
         self.x, self.y = x, y
-
         #Animation Attributes
             #Size represents the size of the spritesheets sprites not the sprites ingame
         self.size = spriteSize
