@@ -88,10 +88,10 @@ class Node:
 
         #splitH for split horizontally, if false we do vertically so no need for second flag
         splitH = random.randint(0,1) == 1
-        if self.width > self.height and self.width / self.height > 1.25:
-            splitH = True
-        elif self.width < self.height and self.width / self.height < 1.25:
+        if self.width > self.height and self.width / self.height >= 1.25:
             splitH = False
+        elif self.height > self.width and self.height / self.width >= 1.25:
+            splitH = True
 
         #ternary based on whether splitting horizontally or vertically
         maxVal = (self.width if splitH else self.height) - boundary_size
@@ -113,26 +113,19 @@ class Node:
 def generate(w: int, h: int, min_size: int = 5, iterations: int = 2) -> list:
     global boundary_size
     boundary_size = min_size
-    arr = [[None for i in range(w)] for j in range(h)]
+    arr = [['.' for i in range(w)] for j in range(h)]
     Root = Node(x = 0, y = 0, width = len(arr[0]), height = len(arr))
-    print(Root.values)
     Root.split()
     Tree = BinaryTree(Root)
     iterate(Tree.getRootNode(), iterations)
-    print(Tree.getRootNode())
     nodes = Tree.Traversal()
-    print(nodes, '\n', len(nodes))
     leaves = Tree.getLeafNodes()
-    print(leaves, '\n', len(leaves))
     checkLeaves(arr, leaves)
 
 def checkLeaves(arr, leaves):
-    for each in arr:
-        print(each)
     counter = 0
     for leaf in leaves:
         counter += 1
-        print(counter)
         #vals(x, y, width, height)
         print(leaf.values)
         (x, y, width, height) = leaf.values
@@ -151,4 +144,4 @@ def iterate(node, maxiters: int, iter: int = 0):
         iterate(node.getleftChild(), maxiters, iter)
         iterate(node.getrightChild(), maxiters, iter)
 
-generate(20, 20)
+generate(30, 30)
