@@ -49,7 +49,7 @@ class Node:
     '''
     @property
     def values(self):
-        return (self.x, self.y, self.height, self.width)
+        return (self.x, self.y, self.width, self.height)
 
     def setleftChild(self, node):
         self.leftChild = node
@@ -110,7 +110,7 @@ class Node:
         self.setleftChild(left)
         self.setrightChild(right)
 
-def generate(w: int, h: int, min_size: int = 5, iterations: int = 2) -> list:
+def generate(w: int, h: int, min_size: int = 5, iterations: int = 3) -> list:
     global boundary_size
     boundary_size = min_size
     arr = [['.' for i in range(w)] for j in range(h)]
@@ -129,8 +129,8 @@ def checkLeaves(arr, leaves):
         #vals(x, y, width, height)
         print(leaf.values)
         (x, y, width, height) = leaf.values
-        for i in range(y, height):
-            for j in range(x, width):
+        for i in range(y, y+height):
+            for j in range(x, x+width):
                 arr[i][j] = counter
     for each in arr:
         print(each)
