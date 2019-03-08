@@ -126,6 +126,31 @@ class Node:
             #(x, y, width, height)
             self.room = (self.x + roomPos[0], self.y + roomPos[1],
                          roomSize[0], roomSize[1])
+
+    def getRoom(self) -> tuple:
+        if not self.room is None:
+            return self.room
+        else:
+            lRoom: tuple
+            rRoom: tuple
+            if not self.leftChild is None:
+                lRoom = self.leftChild.getRoom()
+            if not self.rightChild is None:
+                rRoom = self.rightChild.getRoom()
+            if lRoom is None and rRoom is None:
+                return None
+            elif rRoom is None:
+                return lRoom
+            elif lRoom is None:
+                return rRoom
+            elif (random.randint(0, 1) == 1):
+                return lRoom
+            else:
+                return rRoom
+
+    def createHall(self, lRoom: tuple, rRoom: tuple):
+        pass
+
 def checkLeaves(arr, leaves):
     counter = 0
     for leaf in leaves:
@@ -146,7 +171,7 @@ def iterate(node, maxiters: int, iter: int = 0):
         iterate(node.getleftChild(), maxiters, iter)
         iterate(node.getrightChild(), maxiters, iter)
 
-def generate(w: int, h: int, min_size: int = 5, iterations: int = 2) -> list:
+def generate(w: int, h: int, min_size: int = 4, iterations: int = 5) -> list:
     global boundary_size
     boundary_size = min_size
     arr = [[0 for i in range(w)] for j in range(h)]
@@ -159,4 +184,4 @@ def generate(w: int, h: int, min_size: int = 5, iterations: int = 2) -> list:
     Tree.getRootNode().createRooms()
     checkLeaves(arr, leaves)
 
-generate(20, 20)
+generate(50, 50)
