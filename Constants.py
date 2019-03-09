@@ -5,7 +5,7 @@ SCREEN_HEIGHT = 64 * 9
 LOGGER_WIDTH = 64 * 4
 GAME_WIDTH = SCREEN_WIDTH - LOGGER_WIDTH
 
-TILESIZE = 64
+TILESIZE = 32
 
 #Gets the directory of where the file is being run from
 WORKING_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
