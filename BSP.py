@@ -149,7 +149,57 @@ class Node:
                 return rRoom
 
     def createHall(self, lRoom: tuple, rRoom: tuple):
-        pass
+        #Attempt to connect rooms together via hallways
+        #Room(x, y, width, height)
+        #Hall(x ,y, width, height)
+        halls: list = []
+        point1: tuple = (random.randint(lRoom[0] + 1, lRoom[0] + lRoom[2] - 2),
+                         random.randint(lRoom[1] + 1, lRoom[1] + lRoom[3] - 2))
+        point2: tuple = (random.randint(rRoom[0] + 1, rRoom[0] + rRoom[2] - 2),
+                         random.randint(rRoom[1] + 1, rRoom[1] + rRoom[3] - 2))
+
+        w = point1[0] - point2[0]
+        w = point1[1] - point2[1]
+
+        if w < 0:
+            if h < 0:
+                if random.randint(0, 1) == 1:
+                    halls.append((point2[0], point1[1], abs(w), 1))
+                    halls.append((point2[0], point2[1], 1, abs(h)))
+                else:
+                    halls.append((point2[0], point2[1], abs(w), 1))
+                    halls.append((point1[0], point2[1], 1, abs(h)))
+            elif h > 0:
+                if random.randint(0, 1) == 1:
+                    halls.append((point2[0], point1[1], abs(w), 1))
+                    halls.append((point2[0], point1[1], 1, abs(h)))
+                else:
+                    halls.append((point2[0], point2[1], abs(w), 1))
+                    halls.append((point1[0], point1[1], 1, abs(h)))
+            elif h == 0:
+                halls.append((point2[0], point2[1], abs(w), 1))
+        elif w > 0:
+            if h < 0:
+                if random.randint(0, 1) == 1:
+                    halls.append((point1[0], point2[1], abs(w), 1))
+                    halls.append((point1[0], point2[1], 1, abs(h)))
+                else:
+                    halls.append((point1[0], point1[1], abs(w), 1))
+                    halls.append((point2[0], point2[1], 1, abs(h)))
+            elif h > 0:
+                if random.randint(0, 1) == 1:
+                    halls.append((point1[0], point1[1], abs(w), 1))
+                    halls.append((point2[0], point1[1], 1, abs(h)))
+                else:
+                    halls.append((point1[0], point2[1], abs(w), 1))
+                    halls.append((point1[0], point1[1], 1, abs(h)))
+            elif h == 0:
+                halls.append((point1[0], point1[1], abs(w), 1))
+        else:
+            if h < 0:
+                halls.append((point2[0], point2[1], 1, abs(h)))
+            elif h > 0:
+                halls.append((point1[0], point1[1], 1, abs(h)))
 
 def checkLeaves(arr, leaves):
     counter = 0
@@ -171,7 +221,7 @@ def iterate(node, maxiters: int, iter: int = 0):
         iterate(node.getleftChild(), maxiters, iter)
         iterate(node.getrightChild(), maxiters, iter)
 
-def generate(w: int, h: int, min_size: int = 4, iterations: int = 5) -> list:
+def generate(w: int, h: int, min_size: int = 4, iterations: int = 4) -> list:
     global boundary_size
     boundary_size = min_size
     arr = [[0 for i in range(w)] for j in range(h)]
