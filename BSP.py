@@ -41,7 +41,8 @@ class Node:
         self.rightChild = rightChild
         self.parentNode = parent
 
-        self.room: tuple
+        self.room: tuple = None
+        self.halls: list = None
 
     @property
     def values(self):
@@ -112,6 +113,8 @@ class Node:
                 self.leftChild.createRooms()
             if not self.rightChild is None:
                 self.rightChild.createRooms()
+            if self.leftChild is not None and self.rightChild is not None:
+                self.createHall(self.leftChild.getRoom(), self.rightChild.getRoom())
         else:
             roomSize: tuple
             roomPos: tuple
@@ -120,7 +123,6 @@ class Node:
                         random.randint(3, self.height - 1))
 
             #Place the rooom within the room, but not touching the edge
-            print(1, self.width - roomSize[0] - 1)
             roomPos = (random.randint(1, self.width - roomSize[0]),
                        random.randint(1, self.height - roomSize[1]))
             #(x, y, width, height)
@@ -152,67 +154,133 @@ class Node:
         #Attempt to connect rooms together via hallways
         #Room(x, y, width, height)
         #Hall(x ,y, width, height)
-        halls: list = []
-        point1: tuple = (random.randint(lRoom[0] + 1, lRoom[0] + lRoom[2] - 2),
-                         random.randint(lRoom[1] + 1, lRoom[1] + lRoom[3] - 2))
-        point2: tuple = (random.randint(rRoom[0] + 1, rRoom[0] + rRoom[2] - 2),
-                         random.randint(rRoom[1] + 1, rRoom[1] + rRoom[3] - 2))
+        self.halls = []
+        point1: tuple = (random.randint(lRoom[0] + 1, lRoom[0] + lRoom[2] - 1),
+                         random.randint(lRoom[1] + 1, lRoom[1] + lRoom[3] - 1))
+        point2: tuple = (random.randint(rRoom[0] + 1, rRoom[0] + rRoom[2] - 1),
+                         random.randint(rRoom[1] + 1, rRoom[1] + rRoom[3] - 1))
 
         w = point1[0] - point2[0]
-        w = point1[1] - point2[1]
+        h = point1[1] - point2[1]
 
         if w < 0:
             if h < 0:
                 if random.randint(0, 1) == 1:
-                    halls.append((point2[0], point1[1], abs(w), 1))
-                    halls.append((point2[0], point2[1], 1, abs(h)))
+                    self.halls.append((point2[0], point1[1], abs(w), 1))
+                    self.halls.append((point2[0], point2[1], 1, abs(h)))
                 else:
-                    halls.append((point2[0], point2[1], abs(w), 1))
-                    halls.append((point1[0], point2[1], 1, abs(h)))
+                    self.halls.append((point2[0], point2[1], abs(w), 1))
+                    self.halls.append((point1[0], point2[1], 1, abs(h)))
             elif h > 0:
                 if random.randint(0, 1) == 1:
-                    halls.append((point2[0], point1[1], abs(w), 1))
-                    halls.append((point2[0], point1[1], 1, abs(h)))
+                    self.halls.append((point2[0], point1[1], abs(w), 1))
+                    self.halls.append((point2[0], point1[1], 1, abs(h)))
                 else:
-                    halls.append((point2[0], point2[1], abs(w), 1))
-                    halls.append((point1[0], point1[1], 1, abs(h)))
+                    self.halls.append((point2[0], point2[1], abs(w), 1))
+                    self.halls.append((point1[0], point1[1], 1, abs(h)))
             elif h == 0:
-                halls.append((point2[0], point2[1], abs(w), 1))
+                self.halls.append((point2[0], point2[1], abs(w), 1))
         elif w > 0:
             if h < 0:
                 if random.randint(0, 1) == 1:
-                    halls.append((point1[0], point2[1], abs(w), 1))
-                    halls.append((point1[0], point2[1], 1, abs(h)))
+                    self.halls.append((point1[0], point2[1], abs(w), 1))
+                    self.halls.append((point1[0], point2[1], 1, abs(h)))
                 else:
-                    halls.append((point1[0], point1[1], abs(w), 1))
-                    halls.append((point2[0], point2[1], 1, abs(h)))
+                    self.halls.append((point1[0], point1[1], abs(w), 1))
+                    self.halls.append((point2[0], point2[1], 1, abs(h)))
             elif h > 0:
                 if random.randint(0, 1) == 1:
-                    halls.append((point1[0], point1[1], abs(w), 1))
-                    halls.append((point2[0], point1[1], 1, abs(h)))
+                    self.halls.append((point1[0], point1[1], abs(w), 1))
+                    self.halls.append((point2[0], point1[1], 1, abs(h)))
                 else:
-                    halls.append((point1[0], point2[1], abs(w), 1))
-                    halls.append((point1[0], point1[1], 1, abs(h)))
+                    self.halls.append((point1[0], point2[1], abs(w), 1))
+                    self.halls.append((point1[0], point1[1], 1, abs(h)))
             elif h == 0:
-                halls.append((point1[0], point1[1], abs(w), 1))
+                self.halls.append((point1[0], point1[1], abs(w), 1))
         else:
             if h < 0:
-                halls.append((point2[0], point2[1], 1, abs(h)))
+                self.halls.append((point2[0], point2[1], 1, abs(h)))
             elif h > 0:
-                halls.append((point1[0], point1[1], 1, abs(h)))
+                self.halls.append((point1[0], point1[1], 1, abs(h)))
 
-def checkLeaves(arr, leaves):
-    counter = 0
-    for leaf in leaves:
-        counter += 1
+def GenerateArray(arr, nodes):
+    for node in nodes:
         #vals(x, y, width, height)
-        print(leaf.values)
-        (x, y, width, height) = leaf.room
-        for i in range(y, y+height):
-            for j in range(x, x+width):
-                arr[i][j] = counter
-    for each in arr:
-        print(each)
+        if node.room is not None:
+            (x, y, width, height) = node.room
+            for i in range(y, y+height):
+                for j in range(x, x+width):
+                    arr[i][j] = True
+        if node.halls is not None:
+            try:
+                ((x0, y0, width0, height0), (x1, y1, width1, height1)) = node.halls
+                if  y0 < y1 and x0 < x1:
+                    for i in range(y0, y0+height0):
+                        for j in range(x0, x0+width0):
+                            arr[i][j] = True
+                    for i in range(y1 - height1, y1):
+                        for j in range(x1 - width1, x1):
+                            arr[i][j] = True
+
+                if y0 < y1 and x0 > x1:
+                    for i in range(y0, y0+height0):
+                        for j in range(x0-width0, x0):
+                            arr[i][j] = True
+                    for i in range(y1 - height1, y1):
+                        for j in range(x1, x1 + width1):
+                            arr[i][j] = True
+
+                if y0 < y1 and x0 == x1:
+                    for i in range(y0, y0+height0):
+                        arr[i][x0] = True
+                    for i in range(y1 - height1, y1):
+                        arr[i][x1] = True
+
+                if  y0 > y1 and x0 < x1:
+                    for i in range(y0 - height0, y0):
+                        for j in range(x0, x0+width0):
+                            arr[i][j] = True
+                    for i in range(y1, y1 + height1):
+                        for j in range(x1 - width1, x1):
+                            arr[i][j] = True
+
+                if y0 > y1 and x0 > x1:
+                    for i in range(y0 - height0, y0):
+                        for j in range(x0-width0, x0):
+                            arr[i][j] = True
+                    for i in range(y1, y1 + height1):
+                        for j in range(x1, x1 + width1):
+                            arr[i][j] = True
+
+                if y0 > y1 and x0 == x1:
+                    for i in range(y0 - height0, y0):
+                        arr[i][x0] = True
+                    for i in range(y1, y1 + height1):
+                        arr[i][x1] = True
+
+                if y0 == y1 and x0 < x1:
+                    for j in range(x0, x0 + width0):
+                        arr[y0][j] = True
+                    for j in range(x1 - width1, x1):
+                        arr[y1][j] = True
+
+                if y0 == y1 and x0 > x1:
+                    for j in range(x0 - width0, x0):
+                        arr[y0][j] = True
+                    for j in range(x1, x1 + width1):
+                        arr[y1][j] = True
+
+            except ValueError:
+                (x0, y0, width0, height0) = node.halls[0]
+                try:
+                    for i in range(y0, y0+height0):
+                        for j in range(x0, x0+width0):
+                            arr[i][j] = True
+                except IndexError:
+                    for i in range(y0 - height0, y0):
+                        for j in range(x0 - width0, x0):
+                            arr[i][j] = True
+    return arr
 
 def iterate(node, maxiters: int, iter: int = 0):
     if not iter == maxiters and not node is None:
@@ -221,17 +289,14 @@ def iterate(node, maxiters: int, iter: int = 0):
         iterate(node.getleftChild(), maxiters, iter)
         iterate(node.getrightChild(), maxiters, iter)
 
-def generate(w: int, h: int, min_size: int = 4, iterations: int = 4) -> list:
+def generate(w: int, h: int, min_size: int = 4, iterations: int = 3) -> list:
     global boundary_size
     boundary_size = min_size
-    arr = [[0 for i in range(w)] for j in range(h)]
+    arr = [[False for i in range(w)] for j in range(h)]
     Root = Node(x = 0, y = 0, width = len(arr[0]), height = len(arr))
     Root.split()
     Tree = BinaryTree(Root)
     iterate(Tree.getRootNode(), iterations)
     nodes = Tree.Traversal()
-    leaves = Tree.getLeafNodes()
     Tree.getRootNode().createRooms()
-    checkLeaves(arr, leaves)
-
-generate(50, 50)
+    return GenerateArray(arr, nodes)
