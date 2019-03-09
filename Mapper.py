@@ -1,7 +1,9 @@
 import Constants, BSP, Tiles, Image
 class Map:
     def __init__(self, tileSheet: str):
-        map = BSP.generate(25, 25)
+        map = BSP.generate(30, 30)
+        for row in map:
+            print(row)
         self.spritesheet = Image.SpriteSheet(tileSheet, 32)
         self.map = self.__getTileMap(map)
 

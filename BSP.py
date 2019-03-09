@@ -34,28 +34,22 @@ class BinaryTree:
 # Need to decide what attributes the node object should have
 class Node:
     # Idk if parsing in the parent node is necessary
-    def __init__(self, x: int, y: int, width: int, height: int, leftChild=None, rightChild=None, parent=None):
+    def __init__(self, x: int, y: int, width: int, height: int, leftChild=None, rightChild=None):
+
+        self.MIN_SIZE = 6
         self.x, self.y = x, y
         self.width, self.height = width, height
         self.leftChild = leftChild
         self.rightChild = rightChild
-        self.parentNode = parent
 
         self.room: tuple = None
         self.halls: list = None
-
-    @property
-    def values(self):
-        return (self.x, self.y, self.width, self.height)
 
     def setleftChild(self, node):
         self.leftChild = node
 
     def setrightChild(self, node):
         self.rightChild = node
-
-    def setParent(self, node):
-        self.parentNode = node
 
     def getleftChild(self):
         try:
@@ -68,12 +62,6 @@ class Node:
             return self.rightChild
         except AttributeError:
             return None
-
-    def getParent(self):
-        return self.parentNode
-
-    def returnChildren(self) -> tuple:
-        return (self.leftChild, self.rightChild)
 
     def split(self):
         #Already split for whatever reason, simply stop
@@ -91,13 +79,13 @@ class Node:
             splitH = True
 
         #ternary based on whether splitting horizontally or vertically
-        maxVal = (self.width if splitH else self.height) - boundary_size
+        maxVal = (self.height if splitH else self.width) - self.MIN_SIZE
         #Too small to split
-        if maxVal < boundary_size:
+        if maxVal <= self.MIN_SIZE:
             return False
 
         #Value to split at
-        split = random.randint(boundary_size, maxVal)
+        split = random.randint(self.MIN_SIZE, maxVal)
         if splitH:
             left = Node(self.x, self.y, self.width, split)
             right = Node(self.x, self.y + split, self.width, self.height - split)
@@ -106,6 +94,9 @@ class Node:
             right = Node(self.x + split, self.y, self.width - split, self.height)
         self.setleftChild(left)
         self.setrightChild(right)
+
+        #Split successful
+        return True
 
     def createRooms(self):
         if not self.leftChild is None or not self.rightChild is None:
@@ -118,13 +109,12 @@ class Node:
         else:
             roomSize: tuple
             roomPos: tuple
-            #Min size is 3x3 and max within 1 of the leaf size
-            roomSize = (random.randint(3, self.width - 1),
-                        random.randint(3, self.height - 1))
-
+            #Min size is 3x3 and max within 2 of the leaf size
+            roomSize = (random.randint(3, self.width - 2),
+                        random.randint(3, self.height - 2))
             #Place the rooom within the room, but not touching the edge
-            roomPos = (random.randint(1, self.width - roomSize[0]),
-                       random.randint(1, self.height - roomSize[1]))
+            roomPos = (random.randint(1, self.width - roomSize[0] - 1),
+                       random.randint(1, self.height - roomSize[1] - 1))
             #(x, y, width, height)
             self.room = (self.x + roomPos[0], self.y + roomPos[1],
                          roomSize[0], roomSize[1])
@@ -205,6 +195,7 @@ class Node:
 
 def GenerateArray(arr, nodes):
     for node in nodes:
+        print(node.room)
         #vals(x, y, width, height)
         if node.room is not None:
             (x, y, width, height) = node.room
@@ -289,9 +280,8 @@ def iterate(node, maxiters: int, iter: int = 0):
         iterate(node.getleftChild(), maxiters, iter)
         iterate(node.getrightChild(), maxiters, iter)
 
-def generate(w: int, h: int, min_size: int = 4, iterations: int = 3) -> list:
-    global boundary_size
-    boundary_size = min_size
+'''
+def generate(w: int, h: int, iterations: int = 3) -> list:
     arr = [[False for i in range(w)] for j in range(h)]
     Root = Node(x = 0, y = 0, width = len(arr[0]), height = len(arr))
     Root.split()
@@ -299,4 +289,27 @@ def generate(w: int, h: int, min_size: int = 4, iterations: int = 3) -> list:
     iterate(Tree.getRootNode(), iterations)
     nodes = Tree.Traversal()
     Tree.getRootNode().createRooms()
+    return GenerateArray(arr, nodes)
+'''
+def generate(w: int, h: int, MAX_SIZE:int = 10):
+    nodes = []
+    arr = [[False for i in range(w)] for j in range(h)]
+    root = Node(0, 0, w, h)
+    nodes.append(root)
+    did_split = True
+    while did_split:
+        did_split = False
+        for node in nodes:
+            if node.getleftChild() is None and node.getrightChild() is None:
+                #If node is too large
+                if node.width > MAX_SIZE or node.height > MAX_SIZE:
+                    if node.split():
+                        nodes.append(node.getrightChild())
+                        nodes.append(node.getrightChild())
+                        did_split = True
+    root.createRooms()
+    print(nodes)
+    print(len(nodes))
+    for node in nodes:
+        print((node.leftChild is None and node.rightChild is None))
     return GenerateArray(arr, nodes)
